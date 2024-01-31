@@ -1,0 +1,47 @@
+{
+  "name": "tanstack-query-json-api",
+  "version": "1.0.0",
+  "description": "Helpers for TanStack Query to work with JSON:API",
+  "type": "module",
+  "author": "Ben Scholzen 'DASPRiD'",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "tanstack",
+    "query",
+    "zod"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dasprid/tanstack-query-json-api.git"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "format": "biome format . --write",
+    "check": "biome check . --apply"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.5.2",
+    "@commitlint/cli": "^18.4.4",
+    "@commitlint/config-conventional": "^18.4.4",
+    "@tsconfig/vite-react": "^3.0.0",
+    "lefthook": "^1.5.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.2",
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.4"
+  }
+}
