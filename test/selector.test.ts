@@ -4,6 +4,7 @@ import {
     type Relationships,
     createDataSelector,
     createNullableResourceSelector,
+    createPaginatedCollectionSelector,
     createResourceCollectionSelector,
     createResourceSelector,
 } from "../src/index.js";
@@ -227,6 +228,34 @@ describe("crateDataSelector", () => {
         expect(result).toEqual({
             id: "ID-p",
             title: "foo",
+        });
+    });
+});
+
+describe("cratePaginatedCollectionSelector", () => {
+    it("should extract page params", () => {
+        const selector = createPaginatedCollectionSelector(
+            createResourceCollectionSelector({
+                type: "article",
+                attributesSchema: z.object({ title: z.string() }),
+            }),
+        );
+
+        const result = selector({
+            data: [],
+            links: {
+                next: "/?page[number]=2",
+            },
+        });
+
+        expect(result).toEqual({
+            data: [],
+            links: {
+                next: "/?page[number]=2",
+            },
+            pageParams: {
+                next: { number: "2" },
+            },
         });
     });
 });

@@ -242,7 +242,7 @@ type PaginatedCollectionSelector<TDocument> = Selector<
 >;
 
 export const createPaginatedCollectionSelector =
-    <TDocument extends DocumentResult<ResourceCollectionDocumentResult<AnyResourceDeserializer>>>(
+    <TDocument extends ResourceCollectionDocumentResult<AnyResourceDeserializer>>(
         documentSelector: Selector<TDocument>,
     ): PaginatedCollectionSelector<TDocument> =>
     (raw: unknown) => {
