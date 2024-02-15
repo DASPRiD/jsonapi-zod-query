@@ -128,9 +128,9 @@ export type NullableResourceDocumentResult<TDeserializer extends AnyResourceDese
 export type ResourceCollectionDocumentResult<TDeserializer extends AnyResourceDeserializer> =
     DocumentResult<ResourceResult<TDeserializer>[]> & {
         pageParams: {
-            first?: PageParams | null;
-            prev?: PageParams | null;
-            next?: PageParams | null;
-            last?: PageParams | null;
+            first?: PageParams;
+            prev?: PageParams;
+            next?: PageParams;
+            last?: PageParams;
         };
     };
