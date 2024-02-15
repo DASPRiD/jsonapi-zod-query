@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/dasprid/jsonapi-zod-query/compare/v1.1.1...v1.1.2) (2024-02-15)
+
+
+### Bug Fixes
+
+* **selector:** remove double type nesting ([66f45cf](https://github.com/dasprid/jsonapi-zod-query/commit/66f45cf97eeddf762194ce794fe080947278f8d6))
+
 ## [1.1.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.1.0...v1.1.1) (2024-02-15)
 
 
