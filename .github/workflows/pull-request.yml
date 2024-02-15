@@ -1,0 +1,43 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use pnpm 8.x
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Biome CI
+        run: pnpm exec biome ci .
+
+      - name: TypeCheck
+        run: pnpm exec tsc
+
+      - name: Test
+        run: pnpm coverage
+
+      - name: Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: DASPRiD/jsonapi-zod-query
