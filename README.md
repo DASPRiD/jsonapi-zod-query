@@ -92,17 +92,11 @@ const articleSelector = createDataSelector(createResourceSelector(/* … */));
 ### Handling pagination
 
 This library assumes that you never actually use the `links` properties in the JSON:API documents, but are primarily
-interested in the pagination functionality for your own queries. For this you need to wrap the collection selector
-with another selector:
+interested in the pagination functionality for your own queries. Page params are automatically extracted by the
+selector created through `createResourceCollectionSelector()`.
 
-```typescript
-import { createPaginatedCollectionSelector, createResourceSelector } from "jsonapi-zod-query";
-
-const articlesSelector = createPaginatedCollectionSelector(createResourceCollectionSelector(/* … */));
-```
-
-This will result in an object with a `data` and a `pageParams` property. The `pageParams` object will contain the
-parameters defined in the links through the `first`, `prev`, `next` and `last` properties.
+You can access the page parameters through the `pageParams` properties, which will contain the parameters defined in the
+links through the `first`, `prev`, `next` and `last` properties.
 
 You can pass these parameters to your query function. Before performing your fetch, you have to inject the parameters
 into the URL again:

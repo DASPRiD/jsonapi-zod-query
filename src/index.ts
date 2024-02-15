@@ -8,7 +8,6 @@ export {
     createResourceSelector,
     createNullableResourceSelector,
     createResourceCollectionSelector,
-    createPaginatedCollectionSelector,
     createDataSelector,
 } from "./selector.ts";
 export type { Relationships } from "./deserializer.ts";
