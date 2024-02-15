@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.0.1...v1.1.0) (2024-02-15)
+
+
+### Features
+
+* allow proper JSON:API parsing ([0af0eaa](https://github.com/dasprid/jsonapi-zod-query/commit/0af0eaab1d0cbc45c03e36eb4df9458cabfc76c4))
+
 ## [1.0.1](https://github.com/dasprid/tanstack-query-json-api/compare/v1.0.0...v1.0.1) (2024-02-01)
 
 
