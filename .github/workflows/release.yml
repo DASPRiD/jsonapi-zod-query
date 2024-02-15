@@ -35,9 +35,8 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v4
-        env:
+        with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: DASPRiD/jsonapi-zod-query
 
       - name: Build
         run: pnpm build
