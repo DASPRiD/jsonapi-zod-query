@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.1.2...v1.2.0) (2024-02-15)
+
+
+### Bug Fixes
+
+* remove createPaginatedCollectionSelector from index export ([a496085](https://github.com/dasprid/jsonapi-zod-query/commit/a4960858393f21b38ee66df9a10dec5843056da9))
+
+
+### Features
+
+* move page param parsing into collection selector ([a8416c4](https://github.com/dasprid/jsonapi-zod-query/commit/a8416c4ca10aec17c4f09badb8a59f5c3903242a))
+
 ## [1.1.2](https://github.com/dasprid/jsonapi-zod-query/compare/v1.1.1...v1.1.2) (2024-02-15)
 
 
