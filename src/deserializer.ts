@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { PageParams } from "./pagination.ts";
 import type { AttributesSchema, DefaultLinks, DefaultMeta, RootLinks } from "./standard-schemas.ts";
 
 export type RelationshipType = "one" | "one_nullable" | "many";
@@ -125,4 +126,11 @@ export type ResourceDocumentResult<TDeserializer extends AnyResourceDeserializer
 export type NullableResourceDocumentResult<TDeserializer extends AnyResourceDeserializer> =
     DocumentResult<ResourceResult<TDeserializer> | null>;
 export type ResourceCollectionDocumentResult<TDeserializer extends AnyResourceDeserializer> =
-    DocumentResult<ResourceResult<TDeserializer>[]>;
+    DocumentResult<ResourceResult<TDeserializer>[]> & {
+        pageParams: {
+            first?: PageParams | null;
+            prev?: PageParams | null;
+            next?: PageParams | null;
+            last?: PageParams | null;
+        };
+    };

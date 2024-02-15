@@ -9,7 +9,7 @@ import type {
     ResourceDocumentResult,
     ResourceResult,
 } from "./deserializer.ts";
-import { type PageParams, parsePageParamsFromLink } from "./pagination.ts";
+import { parsePageParamsFromLink } from "./pagination.ts";
 import {
     type DocumentSchema,
     type RelationshipSchema,
@@ -216,40 +216,13 @@ export const createResourceCollectionSelector = <TDeserializer extends AnyResour
         const document = documentSchema.parse(raw);
         const included = prepareIncludedMap(document);
 
-        return createFlattenedDocumentFromData(
-            document,
-            document.data.map((resource) =>
-                flattenResource(resource, null, included, resourceSchemaCache),
-            ),
-        );
-    };
-};
-
-export const createDataSelector =
-    <TData>(documentSelector: Selector<DocumentResult<TData>>): Selector<TData> =>
-    (raw: unknown) =>
-        documentSelector(raw).data;
-
-type PaginatedCollectionSelector<TDocument> = Selector<
-    TDocument & {
-        pageParams: {
-            first?: PageParams | null;
-            prev?: PageParams | null;
-            next?: PageParams | null;
-            last?: PageParams | null;
-        };
-    }
->;
-
-export const createPaginatedCollectionSelector =
-    <TDocument extends ResourceCollectionDocumentResult<AnyResourceDeserializer>>(
-        documentSelector: Selector<TDocument>,
-    ): PaginatedCollectionSelector<TDocument> =>
-    (raw: unknown) => {
-        const document = documentSelector(raw);
-
         return {
-            ...document,
+            ...createFlattenedDocumentFromData(
+                document,
+                document.data.map((resource) =>
+                    flattenResource(resource, null, included, resourceSchemaCache),
+                ),
+            ),
             pageParams: {
                 first: parsePageParamsFromLink(document.links?.first),
                 prev: parsePageParamsFromLink(document.links?.prev),
@@ -258,3 +231,9 @@ export const createPaginatedCollectionSelector =
             },
         };
     };
+};
+
+export const createDataSelector =
+    <TData>(documentSelector: Selector<DocumentResult<TData>>): Selector<TData> =>
+    (raw: unknown) =>
+        documentSelector(raw).data;

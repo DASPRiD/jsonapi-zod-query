@@ -4,7 +4,6 @@ import {
     type Relationships,
     createDataSelector,
     createNullableResourceSelector,
-    createPaginatedCollectionSelector,
     createResourceCollectionSelector,
     createResourceSelector,
 } from "../src/index.js";
@@ -190,7 +189,7 @@ describe("createNullableResourceSelector", () => {
 });
 
 describe("createResourceCollectionSelector", () => {
-    it("should return an array", () => {
+    it("should return an page params", () => {
         const selector = createResourceCollectionSelector({
             type: "article",
         });
@@ -200,10 +199,19 @@ describe("createResourceCollectionSelector", () => {
                 { id: "1", type: "article" },
                 { id: "2", type: "article" },
             ],
+            links: {
+                next: "/?page[number]=2",
+            },
         });
 
         expect(result).toEqual({
             data: [{ id: "1" }, { id: "2" }],
+            links: {
+                next: "/?page[number]=2",
+            },
+            pageParams: {
+                next: { number: "2" },
+            },
         });
     });
 });
@@ -228,34 +236,6 @@ describe("crateDataSelector", () => {
         expect(result).toEqual({
             id: "ID-p",
             title: "foo",
-        });
-    });
-});
-
-describe("cratePaginatedCollectionSelector", () => {
-    it("should extract page params", () => {
-        const selector = createPaginatedCollectionSelector(
-            createResourceCollectionSelector({
-                type: "article",
-                attributesSchema: z.object({ title: z.string() }),
-            }),
-        );
-
-        const result = selector({
-            data: [],
-            links: {
-                next: "/?page[number]=2",
-            },
-        });
-
-        expect(result).toEqual({
-            data: [],
-            links: {
-                next: "/?page[number]=2",
-            },
-            pageParams: {
-                next: { number: "2" },
-            },
         });
     });
 });
