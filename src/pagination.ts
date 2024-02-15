@@ -3,11 +3,9 @@ import type { Link } from "./standard-schemas.ts";
 const pageParamRegexp = /^page\[([a-zA-Z0-9]+)]$/;
 export type PageParams = Record<string, string>;
 
-export const parsePageParamsFromLink = (
-    link: Link | undefined | null,
-): PageParams | undefined | null => {
+export const parsePageParamsFromLink = (link: Link | undefined | null): PageParams | undefined => {
     if (link === undefined || link === null) {
-        return link;
+        return undefined;
     }
 
     const url = new URL(typeof link === "string" ? link : link.href, "http://localhost");

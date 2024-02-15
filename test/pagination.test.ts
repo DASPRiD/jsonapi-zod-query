@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { injectPageParams, parsePageParamsFromLink } from "../src/index.js";
 
 describe("parsePageParams", () => {
-    it("should return falsy link", () => {
+    it("should return undefined on falsy link", () => {
         expect(parsePageParamsFromLink(undefined)).toBeUndefined();
-        expect(parsePageParamsFromLink(null)).toBeNull();
+        expect(parsePageParamsFromLink(null)).toBeUndefined();
     });
 
     it("should throw when not finding page params", () => {
