@@ -1,6 +1,7 @@
 # JSON:API Query Helpers utilizing Zod
 
 [![Release](https://github.com/DASPRiD/jsonapi-zod-query/actions/workflows/release.yml/badge.svg)](https://github.com/DASPRiD/mikro-orm-js-joda/actions/workflows/release.yml)
+[![codecov](https://codecov.io/gh/DASPRiD/jsonapi-zod-query/graph/badge.svg?token=UuDIjaXCq7)](https://codecov.io/gh/DASPRiD/jsonapi-zod-query)
 
 This package helps you to work with [JSON:API 1.1](https://jsonapi.org/) compliant API servers. In order to validate
 and parse responses, it is assumed that you have [zod](https://www.npmjs.com/package/zod) installed.
