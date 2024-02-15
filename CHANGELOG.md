@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.1...v1.2.2) (2024-02-15)
+
+
+### Bug Fixes
+
+* **deserializer:** do not allow page params to be null ([aec78e0](https://github.com/dasprid/jsonapi-zod-query/commit/aec78e03a3b891caa6f0f39df5771caa6a1cf699))
+
 ## [1.2.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.0...v1.2.1) (2024-02-15)
 
 

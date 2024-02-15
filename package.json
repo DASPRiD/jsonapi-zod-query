@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-zod-query",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Utilities to work with JSON:API on the frontend",
   "type": "module",
   "author": "Ben Scholzen 'DASPRiD'",
