@@ -1,19 +1,16 @@
-import type { Link } from "./common.ts";
+import type { Link } from "./standard-schemas.ts";
 
 const pageParamRegexp = /^page\[([a-zA-Z0-9]+)]$/;
 export type PageParams = Record<string, string>;
 
-/**
- * Parse page params from a link
- *
- * Returns null if the link is not defined.
- */
-export const parsePageParamsFromLink = (link: Link | undefined | null): PageParams | null => {
-    if (!link) {
-        return null;
+export const parsePageParamsFromLink = (
+    link: Link | undefined | null,
+): PageParams | undefined | null => {
+    if (link === undefined || link === null) {
+        return link;
     }
 
-    const url = new URL(typeof link === "string" ? link : link.href);
+    const url = new URL(typeof link === "string" ? link : link.href, "http://localhost");
     const pageParams: Record<string, string> = {};
 
     for (const [key, value] of url.searchParams.entries()) {
@@ -31,18 +28,7 @@ export const parsePageParamsFromLink = (link: Link | undefined | null): PagePara
     return pageParams;
 };
 
-/**
- * Require a page parameter to be set
- */
-export const requirePageParams = (params: PageParams | null): PageParams => {
-    if (!params) {
-        throw new Error("Missing page params");
-    }
-
-    return params;
-};
-
-export const injectPageParams = (url: URL, pageParams?: PageParams): void => {
+export const injectPageParams = (url: URL, pageParams?: PageParams | null): void => {
     if (!pageParams) {
         return;
     }

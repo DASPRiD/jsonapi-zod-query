@@ -1,143 +1,163 @@
-# TanStack Query helpers for JSON:API
+# JSON:API Query Helpers utilizing Zod
 
-[![Release](https://github.com/DASPRiD/tanstack-query-json-api/actions/workflows/release.yml/badge.svg)](https://github.com/DASPRiD/mikro-orm-js-joda/actions/workflows/release.yml)
+[![Release](https://github.com/DASPRiD/jsonapi-zod-query/actions/workflows/release.yml/badge.svg)](https://github.com/DASPRiD/mikro-orm-js-joda/actions/workflows/release.yml)
 
-This package helps you working with [JSON:API 1.1](https://jsonapi.org/) compliant API servers. In order to validate
+This package helps you to work with [JSON:API 1.1](https://jsonapi.org/) compliant API servers. In order to validate
 and parse responses, it is assumed that you have [zod](https://www.npmjs.com/package/zod) installed.
+
+There are no assumption made about how you query your data, except that you are using `fetch`. Selectors from this
+library can be used with e.g. [TanStack Query](https://tanstack.com/query/latest).
+
+Selectors from this library will flatten down all resources and relationships. This makes it easier to work with those
+entities in the frontend.
 
 ## Installation
 
 ### npm
 ```bash
-npm i tanstack-query-json-api
+npm i jsonapi-zod-query
 ```
 
 ### pnpm
 ```bash
-pnpm add tanstack-query-json-api
+pnpm add jsonapi-zod-query
 ```
 
 ## Usage
 
-### Responses with data only
+At its core you create selectors there are three kinds of selectors you can create, namely resource, nullable resource
+and resource collection. All selectors take the same configuration but will yield different parsers.
 
-#### 1. Create data schema
+First you define the primary resource of the document. A resource is defined by its type and optionally an attributes
+schema and a relationships definition.
+
+### Simple example
+
+In this example we show off how to create a selector for a single resource with only attributes defined.
 
 ```typescript
 import { z } from "zod";
+import { createResourceSelector } from "jsonapi-zod-query";
 
-const worldSchema = z.object({
-    id: z.string().uuid(),
-    name: z.string(),
-    someTransform: z.string().toLowerCase(),
-});
-export type World = z.output<typeof worldSchema>;
-```
-
-This schema is used to both validate the data in the response and doing possible transformations. Since transformations
-are done within the selector, this allows caching the transformation result as long as the server responds with the
-same JSON body.
-
-#### 2. Creator selector
-
-```typescript
-import { createDataSelector } from "tanstack-query-json-api";
-
-const worldSelector = createDataSelector(worldSchema);
-```
-
-#### 3. Create query
-
-```typescript
-import { handleJsonApiError } from "tanstack-query-json-api";
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-
-export const useWorldQuery = (worldId: string): UseQueryResult<World> => {
-    return useQuery({
-        queryKey: ["world", worldId],
-        queryFn: async ({ signal }) => {
-            const response = await fetch(`https://my.api/worlds/${worldId}`, { signal });
-            await handleJsonApiError(response);
-            return response.json();
-        },
-        select: worldSelector,
-    });
-};
-```
-
-Please note:
-
-- `handleJsonApiError` will take care of checking the response for 4xx or 5xx status codes. If the response is not
-  successful it will throw a `JsonApiError` which contains all error information. This will be available in
-  `queryResult.error`.
-- There is no need to annotate the type of `response.json()` as the selector takes care of validating and inferring
-  the type.
-
-#### 4. Use the query
-
-You can now use the query hook anywhere you want. The `queryResult.data` property will be of type `World`.
-
-### Responses with non-paginated collections
-
-Handling non-paginated collection responses is not much different from handling individual entities. All you have to do
-is change the selector to accept arrays:
-
-```typescript
-const worldsSelector = createDataSelector(z.array(worldSchema));
-```
-
-Then just create a query hook with return type `UseQueryResult<World[]>`.
-
-### Responses with paginated collections
-
-If a collection uses pagination you have to create a complex selector. Despite its name this is pretty simple:
-
-```typescript
-import { requiredPageParams, parsePageParamsFromLink } from "tanstack-query-json-api";
-
-const selectWorldsPaginated = createComplexApiSelector({
-    dataSchema: z.array(worldSchema),
-    transformer: (document) => ({
-        pageParams: {
-            first: requirePageParams(parsePageParamsFromLink(document.links?.first)),
-            prev: parsePageParamsFromLink(document.links?.prev),
-            next: parsePageParamsFromLink(document.links?.next),
-            last: requirePageParams(parsePageParamsFromLink(document.links?.last)),
-        },
-        worlds: document.data,
+const articleSelector = createResourceSelector({
+    type: "article",
+    attributesSchema: z.object({
+        title: z.string(),
     }),
 });
-export type PaginatedWorlds = ReturnType<typeof selectWorldsPaginated>;
 ```
 
-Here we extract the world collection into the `world` property and define the page params. Note that we mark `first` and
-`last` to be required in this example, while `prev` and `next` are allowed to be null.
-
-If you need access to specific metadata and want to validate them, you can additionally supply a `metaSchema` to the
-selector creation options. Otherwise `document.meta` will default to `Record<string, unknown> | undefined`.
-
-Now we can write our query hook for the selector:
+You can now use the selector in your query functions like this:
 
 ```typescript
-import { injectPageParams } from "tanstack-query-json-api";
-
-export const useWorldsQuery = (
-    pageParams?: PageParams,
-): UseQueryResult<PaginatedWorlds> => {
-    return useQuery({
-        queryKey: ["worlds", { pageParams }],
-        queryFn: async ({ signal }) => {
-            const url = new URL("https://my.api/worlds/");
-            injectPageParams(url, pageParams);
-
-            const response = await fetch(apiUrl("/worlds"), { signal });
-            await handleApiError(response);
-            return response.json();
-        },
-        select: selectWorldsPaginated,
-        placeholderData: keepPreviousData,
-    });
-};
+const response = await fetch("https://example.com");
+const body = await response.json() as unknown;
+const document = articleSelector(body);
 ```
 
-Here the function `injectPageParams()` takes care of injecting the page parameters into the URL when defined.
+### Response error handling
+
+Of course, the example above assumes that the response is always successful. In the real world you cannot make that
+assumption. For this reason there is a utility function which automatically handles errors for your:
+
+```typescript
+import { handleJsonApiError } from "jsonapi-zod-query";
+
+const response = await fetch("https://example.com");
+await handleJsonApiError(response);
+```
+
+If the request is successful (2xx range), the function call is a no-op. Otherwise, it will try to parse the error
+response and throw a matching `JsonApiError`. 
+
+### Nullable and collection selectors
+
+If a response can contain a nullable primary resource, you want to use `createNullableResourceSelector()` instead.
+If the response is for a resource collection, you must use `createResourceCollectionSelector()`.
+
+They are configured the exact same way as `createResourceSelector()`.
+
+### Extracting data
+
+The resource selectors will always return the entire (flattened) document. In most cases you might only be interested
+in the `data` property. To facilitate this you can wrap the selector:
+
+```typescript
+import { createDataSelector, createResourceSelector } from "jsonapi-zod-query";
+
+const articleSelector = createDataSelector(createResourceSelector(/* … */));
+```
+
+### Handling pagination
+
+This library assumes that you never actually use the `links` properties in the JSON:API documents, but are primarily
+interested in the pagination functionality for your own queries. For this you need to wrap the collection selector
+with another selector:
+
+```typescript
+import { createPaginatedCollectionSelector, createResourceSelector } from "jsonapi-zod-query";
+
+const articlesSelector = createPaginatedCollectionSelector(createResourceCollectionSelector(/* … */));
+```
+
+This will result in an object with a `data` and a `pageParams` property. The `pageParams` object will contain the
+parameters defined in the links through the `first`, `prev`, `next` and `last` properties.
+
+You can pass these parameters to your query function. Before performing your fetch, you have to inject the parameters
+into the URL again:
+
+```typescript
+import { injectPageParams } from "jsonapi-zod-query";
+
+const url = new URL("https://example.com");
+injectPageParams(pageParams);
+```
+
+### Relationships
+
+You can define relationships for each resource through the `relationships` object. Each key matches the field name
+in the JSON:API body and an object defines how the relationship should be handled.
+
+You must always define a `relationshipType`, which can be either `one`, `one_nullable` or `many`. Additionally, you
+must define one of the following two properties:
+
+- `resourceType`
+
+  When defining the resource type, the relationship is considered be just an identifier. In this case it will result in
+  an entity with just an `id` defined.
+
+- `include`
+
+  If the response document contains included resource, you can define this to inline the resource into the result. This
+  parameter has the same configuration as the primary resource.
+
+> **TypeScript limitation**
+> 
+> Due to limitations in TypeScript, the configuration fails to apply type hinting for relationships within
+> relationships. To work around this, you can utilize the `satisfies` operator:
+> 
+> ```typescript
+> const selector = createResourceSelector({
+>     type: "article",
+>     relationships: {
+>         author: {
+>             resourceType: "person",
+>             relationshipType: "one",
+>             include: {
+>                 type: "person",
+>                 relationships: {
+>                     profile: {
+>                         relationshipType: "one",
+>                         include: {
+>                             type: "profile",
+>                             attributesSchema: z.object({
+>                                 emailAddress: z.string(),
+>                             }),
+>                         },
+>                     },
+>                 } satisfies Relationships,
+>             },
+>         },
+>     },
+> });
+> ```

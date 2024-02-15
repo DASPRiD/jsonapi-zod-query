@@ -1,18 +1,18 @@
 {
-  "name": "tanstack-query-json-api",
+  "name": "jsonapi-zod-query",
   "version": "1.0.1",
-  "description": "Helpers for TanStack Query to work with JSON:API",
+  "description": "Utilities to work with JSON:API on the frontend",
   "type": "module",
   "author": "Ben Scholzen 'DASPRiD'",
   "license": "BSD-3-Clause",
   "keywords": [
-    "tanstack",
     "query",
-    "zod"
+    "zod",
+    "tanstack"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/dasprid/tanstack-query-json-api.git"
+    "url": "https://github.com/dasprid/jsonapi-zod-query.git"
   },
   "files": [
     "dist/**/*"
@@ -29,6 +29,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc && vite build",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "format": "biome format . --write",
     "check": "biome check . --apply"
   },
@@ -37,10 +39,12 @@
     "@commitlint/cli": "^18.4.4",
     "@commitlint/config-conventional": "^18.4.4",
     "@tsconfig/vite-react": "^3.0.0",
+    "@vitest/coverage-v8": "^1.2.2",
     "lefthook": "^1.5.6",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-plugin-dts": "^3.7.2",
+    "vitest": "^1.2.2",
     "zod": "^3.22.4"
   },
   "peerDependencies": {

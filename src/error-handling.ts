@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { defaultMetaSchema } from "./common.ts";
+import { type DefaultMeta, defaultMetaSchema, linkSchema } from "./standard-schemas.ts";
 
 const jsonApiErrorSchema = z.object({
     id: z.string().optional(),
     links: z
         .object({
-            about: z.string().optional(),
-            type: z.string().optional(),
+            about: linkSchema,
+            type: linkSchema,
         })
         .optional(),
     status: z.string(),
@@ -32,7 +32,8 @@ export class JsonApiError extends Error {
     public constructor(
         message: string,
         public readonly status: number,
-        public readonly errors: Array<z.output<typeof jsonApiErrorSchema>>,
+        public readonly errors: z.output<typeof jsonApiErrorSchema>[],
+        public readonly meta?: DefaultMeta,
     ) {
         super(message);
     }
@@ -48,15 +49,16 @@ export const handleJsonApiError = async (response: Response) => {
         return;
     }
 
-    const result = jsonApiErrorDocumentSchema.safeParse((await response.json()) as unknown);
-
-    if (!result.success) {
-        throw new JsonApiError(`Failed to perform request to ${response.url}`, response.status, []);
+    if (!response.headers.get("Content-Type")?.startsWith("application/vnd.api+json")) {
+        throw new Error("Failed to parse error response, invalid content type");
     }
+
+    const result = jsonApiErrorDocumentSchema.parse((await response.json()) as unknown);
 
     throw new JsonApiError(
         `Failed to perform request to ${response.url}`,
         response.status,
-        result.data.errors,
+        result.errors,
+        result.meta,
     );
 };

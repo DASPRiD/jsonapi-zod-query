@@ -1,0 +1,10 @@
+{
+    "extends": ["@tsconfig/vite-react/tsconfig.json"],
+    "compilerOptions": {
+        "composite": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "types": ["vitest/gobals"]
+    },
+    "include": ["src/**/*", "test/**/*"]
+}

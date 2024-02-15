@@ -2,10 +2,13 @@ export { JsonApiError, handleJsonApiError } from "./error-handling.ts";
 export {
     type PageParams,
     injectPageParams,
-    requirePageParams,
     parsePageParamsFromLink,
 } from "./pagination.ts";
 export {
-    createComplexSelector,
+    createResourceSelector,
+    createNullableResourceSelector,
+    createResourceCollectionSelector,
+    createPaginatedCollectionSelector,
     createDataSelector,
 } from "./selector.ts";
+export type { Relationships } from "./deserializer.ts";
