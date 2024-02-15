@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.0...v1.2.1) (2024-02-15)
+
+
+### Bug Fixes
+
+* **pagination:** always return undfined when there's no link ([882ffe9](https://github.com/dasprid/jsonapi-zod-query/commit/882ffe9193050740b1f0409865c22cc5f086efd1))
+
 # [1.2.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.1.2...v1.2.0) (2024-02-15)
 
 
