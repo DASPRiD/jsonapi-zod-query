@@ -10,7 +10,7 @@ export default defineConfig({
         sourcemap: true,
         lib: {
             entry: resolve(__dirname, "src/index.ts"),
-            name: "index",
+            fileName: "index",
             formats: ["es"],
         },
         rollupOptions: {
