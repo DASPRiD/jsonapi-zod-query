@@ -4,26 +4,36 @@ import type { AttributesSchema, DefaultLinks, DefaultMeta, RootLinks } from "./s
 
 export type RelationshipType = "one" | "one_nullable" | "many";
 
-export type RelationshipDeserializer<
-    TResourceType extends string,
+export type ReferenceRelationshipDeserializer<
     TRelationshipType extends RelationshipType,
-    TInclude extends AnyResourceDeserializer | undefined,
-> = TInclude extends undefined
-    ? {
-          relationshipType: TRelationshipType;
-          resourceType: TResourceType;
-      }
-    : {
-          relationshipType: TRelationshipType;
-          include: TInclude;
-      };
+    TResourceType extends string,
+> = {
+    relationshipType: TRelationshipType;
+    resourceType: TResourceType;
+};
 
-export type AnyRelationshipDeserializer = RelationshipDeserializer<
-    string,
+export type AnyReferenceRelationshipDeserializer = ReferenceRelationshipDeserializer<
     RelationshipType,
-    // biome-ignore lint/suspicious/noExplicitAny: required to avoid circular dependency error
-    ResourceDeserializer<string, AttributesSchema | undefined, any> | undefined
+    string
 >;
+
+export type IncludedRelationshipDeserializer<
+    TRelationshipType extends RelationshipType,
+    TInclude extends AnyResourceDeserializer,
+> = {
+    relationshipType: TRelationshipType;
+    include: TInclude;
+};
+
+export type AnyIncludedRelationshipDeserializer = IncludedRelationshipDeserializer<
+    RelationshipType,
+    // biome-ignore lint/suspicious/noExplicitAny: required to avoid circular dependency
+    any
+>;
+
+export type AnyRelationshipDeserializer =
+    | AnyReferenceRelationshipDeserializer
+    | AnyIncludedRelationshipDeserializer;
 
 export type Relationships = Record<string, AnyRelationshipDeserializer>;
 
@@ -43,21 +53,22 @@ export type AnyResourceDeserializer = ResourceDeserializer<
     Relationships | undefined
 >;
 
-export type InferResourceType<T> = T extends RelationshipDeserializer<
-    infer U,
+export type InferResourceType<T> = T extends ReferenceRelationshipDeserializer<
     RelationshipType,
-    AnyResourceDeserializer | undefined
+    infer U
 >
     ? U
-    : never;
-export type InferRelationshipType<T> = T extends RelationshipDeserializer<
-    string,
-    infer U,
-    AnyResourceDeserializer | undefined
->
+    : T extends IncludedRelationshipDeserializer<infer U, AnyResourceDeserializer>
+      ? U extends AnyResourceDeserializer
+            ? U["type"]
+            : never
+      : never;
+export type InferRelationshipType<T> = T extends ReferenceRelationshipDeserializer<infer U, string>
     ? U
-    : never;
-export type InferInclude<T> = T extends RelationshipDeserializer<string, RelationshipType, infer U>
+    : T extends IncludedRelationshipDeserializer<infer U, AnyResourceDeserializer>
+      ? U
+      : never;
+export type InferInclude<T> = T extends IncludedRelationshipDeserializer<RelationshipType, infer U>
     ? U
     : never;
 export type InferType<T> = T extends ResourceDeserializer<
@@ -82,10 +93,10 @@ export type InferRelationships<T> = T extends ResourceDeserializer<
     ? U
     : never;
 
-type IncludeResult<
-    TDeserializer extends AnyRelationshipDeserializer,
-    TInclude extends AnyResourceDeserializer | undefined = InferInclude<TDeserializer>,
-> = TInclude extends AnyResourceDeserializer ? ResourceResult<TInclude> : { id: string };
+type IncludeResult<TDeserializer extends AnyRelationshipDeserializer> =
+    TDeserializer extends AnyReferenceRelationshipDeserializer
+        ? { id: string }
+        : InferInclude<TDeserializer>;
 
 export type RelationshipResult<
     TDeserializer extends AnyRelationshipDeserializer,
