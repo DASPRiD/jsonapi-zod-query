@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.3...v1.2.4) (2024-03-19)
+
+
+### Bug Fixes
+
+* adjust typings for relationship deserializers ([fa85eda](https://github.com/dasprid/jsonapi-zod-query/commit/fa85edafddce1fb30eb4dc3eff6cc23cc685741b))
+
 ## [1.2.3](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.2...v1.2.3) (2024-02-16)
 
 
