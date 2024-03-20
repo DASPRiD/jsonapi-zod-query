@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.4...v1.2.5) (2024-03-20)
+
+
+### Bug Fixes
+
+* **deserializer:** properly infer resource result for relationships ([73e4f9d](https://github.com/dasprid/jsonapi-zod-query/commit/73e4f9d7a5265773d5f6094accc816b3e920b8b0))
+
 ## [1.2.4](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.3...v1.2.4) (2024-03-19)
 
 
