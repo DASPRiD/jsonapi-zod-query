@@ -96,7 +96,7 @@ export type InferRelationships<T> = T extends ResourceDeserializer<
 type IncludeResult<TDeserializer extends AnyRelationshipDeserializer> =
     TDeserializer extends AnyReferenceRelationshipDeserializer
         ? { id: string }
-        : InferInclude<TDeserializer>;
+        : ResourceResult<InferInclude<TDeserializer>>;
 
 export type RelationshipResult<
     TDeserializer extends AnyRelationshipDeserializer,
