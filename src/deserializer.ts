@@ -111,20 +111,31 @@ type RelationshipsResult<T extends Relationships> = {
     [K in keyof T]: RelationshipResult<T[K]>;
 };
 
+type AppendAttributes<
+    TBase,
+    TAttributesSchema extends AttributesSchema | undefined,
+> = TAttributesSchema extends AttributesSchema ? TBase & z.output<TAttributesSchema> : TBase;
+
+type AppendRelationships<
+    TBase,
+    TRelationships extends Relationships | undefined,
+> = TRelationships extends Relationships ? TBase & RelationshipsResult<TRelationships> : TBase;
+
 export type ResourceResult<
     TDeserializer extends AnyResourceDeserializer,
     TAttributesSchema extends AttributesSchema | undefined = InferAttributesSchema<TDeserializer>,
     TRelationships extends Relationships | undefined = InferRelationships<TDeserializer>,
-> = {
-    id: string;
-    _links?: DefaultLinks;
-    _meta?: DefaultMeta;
-} & (TAttributesSchema extends AttributesSchema
-    ? z.output<TAttributesSchema>
-    : Record<string, never>) &
-    (TRelationships extends Relationships
-        ? RelationshipsResult<TRelationships>
-        : Record<string, never>);
+> = AppendRelationships<
+    AppendAttributes<
+        {
+            id: string;
+            _links?: DefaultLinks;
+            _meta?: DefaultMeta;
+        },
+        TAttributesSchema
+    >,
+    TRelationships
+>;
 
 export type DocumentResult<TData> = {
     data: TData;
