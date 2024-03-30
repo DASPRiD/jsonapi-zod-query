@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.5...v1.2.6) (2024-03-30)
+
+
+### Bug Fixes
+
+* **deserializer:** append attributes and relationships to ResourceResult in a cleaner way ([4ecbce1](https://github.com/dasprid/jsonapi-zod-query/commit/4ecbce1855695069c1be5e936db95df5486e4e19))
+
 ## [1.2.5](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.4...v1.2.5) (2024-03-20)
 
 
