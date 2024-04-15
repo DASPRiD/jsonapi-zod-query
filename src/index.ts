@@ -10,4 +10,12 @@ export {
     createResourceCollectionSelector,
     createDataSelector,
 } from "./selector.ts";
-export type { Relationships } from "./deserializer.ts";
+export type {
+    ResourceCollectionDocumentResult,
+    NullableResourceDocumentResult,
+    ResourceDocumentResult,
+    DocumentResult,
+    ResourceResult,
+    ResourceDeserializer,
+    Relationships,
+} from "./deserializer.ts";
