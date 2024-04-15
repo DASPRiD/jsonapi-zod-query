@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.6...v1.3.0) (2024-04-15)
+
+
+### Features
+
+* export additional types from deserializer ([5459078](https://github.com/dasprid/jsonapi-zod-query/commit/54590789d76448811f169672b9bf1e6ba944c315))
+
 ## [1.2.6](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.5...v1.2.6) (2024-03-30)
 
 
