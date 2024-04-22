@@ -45,10 +45,10 @@ export type AnyRelationshipDeserializer =
 export type Relationships = Record<string, AnyRelationshipDeserializer>;
 
 export type ResourceDeserializer<
-    TType extends string,
-    TAttributesSchema extends AttributesSchema | undefined,
-    TRelationships extends Relationships | undefined,
-    TDocumentMetaSchema extends MetaSchema | undefined,
+    TType extends string = string,
+    TAttributesSchema extends AttributesSchema | undefined = undefined,
+    TRelationships extends Relationships | undefined = undefined,
+    TDocumentMetaSchema extends MetaSchema | undefined = undefined,
 > = {
     type: TType;
     attributesSchema?: TAttributesSchema;
