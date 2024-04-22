@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.4.1...v1.5.0) (2024-04-22)
+
+
+### Features
+
+* export Selector type ([b59ed45](https://github.com/dasprid/jsonapi-zod-query/commit/b59ed45920a11bd11c4b244967c8c08d47e6a4d1))
+
 ## [1.4.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.4.0...v1.4.1) (2024-04-22)
 
 
