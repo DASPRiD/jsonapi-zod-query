@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { FallbackMetaSchema, InferDocumentMetaSchema } from "./deserializer.ts";
 import type {
     AnyRelationshipDeserializer,
     AnyResourceDeserializer,
@@ -55,7 +56,7 @@ const createRelationshipSchema = <TDeserializer extends AnyRelationshipDeseriali
         meta: defaultMetaSchema.optional(),
     });
 
-    let dataSchema: z.ZodType<unknown>;
+    let dataSchema: z.ZodTypeAny;
 
     switch (deserializer.relationshipType) {
         case "one": {
@@ -149,33 +150,45 @@ const includedSchema = z.array(includedResourceSchema);
 
 type BaseDocumentOutput = {
     links?: RootLinks;
-    meta?: DefaultMeta;
     included?: z.output<typeof includedSchema>;
 };
 
-export type DocumentSchema<TDataSchema extends z.ZodType<unknown>> = z.ZodType<
+export type DocumentSchema<
+    TDataSchema extends z.ZodTypeAny,
+    TMetaSchema extends z.ZodTypeAny,
+> = z.ZodType<
     BaseDocumentOutput & {
         data: z.output<TDataSchema>;
-    }
+    } & (z.output<TMetaSchema> extends undefined
+            ? {
+                  meta?: z.output<TMetaSchema>;
+              }
+            : { meta: z.output<TMetaSchema> })
 >;
 
 export const createResourceDocumentSchema = <TDeserializer extends AnyResourceDeserializer>(
     deserializer: TDeserializer,
-): DocumentSchema<ResourceSchema<TDeserializer>> =>
+): DocumentSchema<
+    ResourceSchema<TDeserializer>,
+    FallbackMetaSchema<InferDocumentMetaSchema<TDeserializer>>
+> =>
     z.object({
         data: createResourceSchema(deserializer),
         links: rootLinksSchema.optional(),
-        meta: defaultMetaSchema.optional(),
+        meta: deserializer.documentMetaSchema ?? defaultMetaSchema.optional(),
         included: includedSchema.optional(),
     });
 
 export const createNullableResourceDocumentSchema = <TDeserializer extends AnyResourceDeserializer>(
     deserializer: TDeserializer,
-): DocumentSchema<z.ZodNullable<ResourceSchema<TDeserializer>>> =>
+): DocumentSchema<
+    z.ZodNullable<ResourceSchema<TDeserializer>>,
+    FallbackMetaSchema<InferDocumentMetaSchema<TDeserializer>>
+> =>
     z.object({
         data: createResourceSchema(deserializer).nullable(),
         links: rootLinksSchema.optional(),
-        meta: defaultMetaSchema.optional(),
+        meta: deserializer.documentMetaSchema ?? defaultMetaSchema.optional(),
         included: includedSchema.optional(),
     });
 
@@ -183,10 +196,13 @@ export const createResourceCollectionDocumentSchema = <
     TDeserializer extends AnyResourceDeserializer,
 >(
     deserializer: TDeserializer,
-): DocumentSchema<z.ZodArray<ResourceSchema<TDeserializer>>> =>
+): DocumentSchema<
+    z.ZodArray<ResourceSchema<TDeserializer>>,
+    FallbackMetaSchema<InferDocumentMetaSchema<TDeserializer>>
+> =>
     z.object({
         data: z.array(createResourceSchema(deserializer)),
         links: rootLinksSchema.optional(),
-        meta: defaultMetaSchema.optional(),
+        meta: deserializer.documentMetaSchema ?? defaultMetaSchema.optional(),
         included: includedSchema.optional(),
     });

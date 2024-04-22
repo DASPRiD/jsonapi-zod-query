@@ -89,6 +89,11 @@ import { createDataSelector, createResourceSelector } from "jsonapi-zod-query";
 const articleSelector = createDataSelector(createResourceSelector(/* … */));
 ```
 
+### Typing document meta data
+
+By default, document metadata are considered as an optional record of unknown properties. You can pass a
+`documentMetaSchema` option to resource selector creators, which will enforce a specific schema. 
+
 ### Handling pagination
 
 This library assumes that you never actually use the `links` properties in the JSON:API documents, but are primarily

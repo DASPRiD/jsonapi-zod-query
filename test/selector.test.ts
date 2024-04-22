@@ -31,6 +31,34 @@ describe("createResourceSelector", () => {
         });
     });
 
+    it("should allow specifying document meta schemas", () => {
+        const selector = createResourceSelector({
+            type: "article",
+            documentMetaSchema: z.object({
+                foo: z.string(),
+            }),
+        });
+
+        const result = selector({
+            data: {
+                id: "ID-p",
+                type: "article",
+            },
+            meta: {
+                foo: "bar",
+            },
+        });
+
+        expect(result).toEqual({
+            data: {
+                id: "ID-p",
+            },
+            meta: {
+                foo: "bar",
+            },
+        });
+    });
+
     it("should parse identifier relationship", () => {
         const selector = createResourceSelector({
             type: "article",
@@ -216,7 +244,7 @@ describe("createResourceCollectionSelector", () => {
     });
 });
 
-describe("crateDataSelector", () => {
+describe("createDataSelector", () => {
     it("should extract data", () => {
         const selector = createDataSelector(
             createResourceSelector({

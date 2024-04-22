@@ -1,6 +1,13 @@
 import type { z } from "zod";
 import type { PageParams } from "./pagination.ts";
-import type { AttributesSchema, DefaultLinks, DefaultMeta, RootLinks } from "./standard-schemas.ts";
+import type { defaultMetaSchema } from "./standard-schemas.ts";
+import type {
+    AttributesSchema,
+    DefaultLinks,
+    DefaultMeta,
+    MetaSchema,
+    RootLinks,
+} from "./standard-schemas.ts";
 
 export type RelationshipType = "one" | "one_nullable" | "many";
 
@@ -41,16 +48,19 @@ export type ResourceDeserializer<
     TType extends string,
     TAttributesSchema extends AttributesSchema | undefined,
     TRelationships extends Relationships | undefined,
+    TDocumentMetaSchema extends MetaSchema | undefined,
 > = {
     type: TType;
     attributesSchema?: TAttributesSchema;
     relationships?: TRelationships;
+    documentMetaSchema?: TDocumentMetaSchema;
 };
 
 export type AnyResourceDeserializer = ResourceDeserializer<
     string,
     AttributesSchema | undefined,
-    Relationships | undefined
+    Relationships | undefined,
+    MetaSchema | undefined
 >;
 
 export type InferResourceType<T> = T extends ReferenceRelationshipDeserializer<
@@ -74,20 +84,31 @@ export type InferInclude<T> = T extends IncludedRelationshipDeserializer<Relatio
 export type InferType<T> = T extends ResourceDeserializer<
     infer U,
     AttributesSchema | undefined,
-    Relationships | undefined
+    Relationships | undefined,
+    MetaSchema | undefined
 >
     ? U
     : never;
 export type InferAttributesSchema<T> = T extends ResourceDeserializer<
     string,
     infer U,
-    Relationships | undefined
+    Relationships | undefined,
+    MetaSchema | undefined
 >
     ? U
     : never;
 export type InferRelationships<T> = T extends ResourceDeserializer<
     string,
     AttributesSchema | undefined,
+    infer U,
+    MetaSchema | undefined
+>
+    ? U
+    : never;
+export type InferDocumentMetaSchema<T> = T extends ResourceDeserializer<
+    string,
+    AttributesSchema | undefined,
+    Relationships | undefined,
     infer U
 >
     ? U
@@ -137,18 +158,33 @@ export type ResourceResult<
     TRelationships
 >;
 
-export type DocumentResult<TData> = {
+export type FallbackMetaSchema<T extends MetaSchema> = T extends MetaSchema
+    ? MetaSchema
+    : z.ZodOptional<typeof defaultMetaSchema>;
+
+type MetaResult<TMeta extends MetaSchema | undefined> = TMeta extends MetaSchema
+    ? z.output<TMeta>
+    : DefaultMeta | undefined;
+
+export type DocumentResult<TData, TMeta> = {
     data: TData;
     links?: RootLinks;
-    meta?: DefaultMeta;
+    meta: TMeta;
 };
 export type ResourceDocumentResult<TDeserializer extends AnyResourceDeserializer> = DocumentResult<
-    ResourceResult<TDeserializer>
+    ResourceResult<TDeserializer>,
+    MetaResult<InferDocumentMetaSchema<TDeserializer>>
 >;
 export type NullableResourceDocumentResult<TDeserializer extends AnyResourceDeserializer> =
-    DocumentResult<ResourceResult<TDeserializer> | null>;
+    DocumentResult<
+        ResourceResult<TDeserializer> | null,
+        MetaResult<InferDocumentMetaSchema<TDeserializer>>
+    >;
 export type ResourceCollectionDocumentResult<TDeserializer extends AnyResourceDeserializer> =
-    DocumentResult<ResourceResult<TDeserializer>[]> & {
+    DocumentResult<
+        ResourceResult<TDeserializer>[],
+        MetaResult<InferDocumentMetaSchema<TDeserializer>>
+    > & {
         pageParams: {
             first?: PageParams;
             prev?: PageParams;

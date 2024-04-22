@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const defaultMetaSchema = z.record(z.unknown());
+export type MetaSchema = z.ZodTypeAny;
 export type DefaultMeta = z.output<typeof defaultMetaSchema>;
 
 const linkObjectSchema = z.object({
@@ -30,4 +31,4 @@ export const rootLinksSchema = z.object({
 });
 export type RootLinks = z.output<typeof rootLinksSchema>;
 
-export type AttributesSchema = z.AnyZodObject;
+export type AttributesSchema = z.ZodTypeAny;

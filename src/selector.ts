@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { ZodTypeAny, z } from "zod";
 import type {
     AnyRelationshipDeserializer,
     AnyResourceDeserializer,
@@ -28,7 +28,7 @@ type IncludedResource = {
 type ResourceSchemaCache = Map<string, ResourceSchema<AnyResourceDeserializer>>;
 type Included = Map<string, IncludedResource>;
 
-const prepareIncludedMap = (document: z.output<DocumentSchema<z.ZodType<unknown>>>) =>
+const prepareIncludedMap = (document: z.output<DocumentSchema<z.ZodTypeAny, z.ZodTypeAny>>) =>
     new Map<string, IncludedResource>(
         document.included?.map((resource) => [
             `${resource.type}:::${resource.id}`,
@@ -151,10 +151,10 @@ const flattenResource = <TDeserializer extends AnyResourceDeserializer>(
 
 type Selector<T> = (raw: unknown) => T;
 
-const createFlattenedDocumentFromData = <TData>(
-    result: z.output<DocumentSchema<z.ZodType<unknown>>>,
+const createFlattenedDocumentFromData = <TData, TMetaSchema extends ZodTypeAny>(
+    result: z.output<DocumentSchema<z.ZodTypeAny, TMetaSchema>>,
     data: TData,
-): DocumentResult<TData> => {
+): DocumentResult<TData, z.output<TMetaSchema>> => {
     const document: Record<string, unknown> = {
         data,
     };
@@ -167,7 +167,7 @@ const createFlattenedDocumentFromData = <TData>(
         document.meta = result.meta;
     }
 
-    return document as DocumentResult<TData>;
+    return document as DocumentResult<TData, z.output<TMetaSchema>>;
 };
 
 export const createResourceSelector = <TDeserializer extends AnyResourceDeserializer>(
@@ -234,6 +234,6 @@ export const createResourceCollectionSelector = <TDeserializer extends AnyResour
 };
 
 export const createDataSelector =
-    <TData>(documentSelector: Selector<DocumentResult<TData>>): Selector<TData> =>
+    <TData, TMeta>(documentSelector: Selector<DocumentResult<TData, TMeta>>): Selector<TData> =>
     (raw: unknown) =>
         documentSelector(raw).data;
