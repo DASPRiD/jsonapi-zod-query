@@ -149,7 +149,7 @@ const flattenResource = <TDeserializer extends AnyResourceDeserializer>(
     return flat as ResourceResult<TDeserializer>;
 };
 
-type Selector<T> = (raw: unknown) => T;
+export type Selector<T> = (raw: unknown) => T;
 
 const createFlattenedDocumentFromData = <TData, TMetaSchema extends ZodTypeAny>(
     result: z.output<DocumentSchema<z.ZodTypeAny, TMetaSchema>>,

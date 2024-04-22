@@ -9,6 +9,7 @@ export {
     createNullableResourceSelector,
     createResourceCollectionSelector,
     createDataSelector,
+    type Selector,
 } from "./selector.ts";
 export type {
     ResourceCollectionDocumentResult,
