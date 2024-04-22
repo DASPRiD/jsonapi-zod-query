@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.4.0...v1.4.1) (2024-04-22)
+
+
+### Bug Fixes
+
+* set defaults for ResourceDeserializer type ([d46e01f](https://github.com/dasprid/jsonapi-zod-query/commit/d46e01f388ca991bdd20304b85ccf8ca08374b00))
+
 # [1.4.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.3.0...v1.4.0) (2024-04-22)
 
 
