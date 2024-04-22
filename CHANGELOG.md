@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.3.0...v1.4.0) (2024-04-22)
+
+
+### Features
+
+* allow specifying document meta schema ([33f7152](https://github.com/dasprid/jsonapi-zod-query/commit/33f71523f10c0c2233a4419e814299c5af4d8414))
+
 # [1.3.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.2.6...v1.3.0) (2024-04-15)
 
 
