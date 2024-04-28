@@ -177,7 +177,10 @@ export const createResourceDocumentSchema = <TDeserializer extends AnyResourceDe
         links: rootLinksSchema.optional(),
         meta: deserializer.documentMetaSchema ?? defaultMetaSchema.optional(),
         included: includedSchema.optional(),
-    });
+    }) as DocumentSchema<
+        ResourceSchema<TDeserializer>,
+        FallbackMetaSchema<InferDocumentMetaSchema<TDeserializer>>
+    >;
 
 export const createNullableResourceDocumentSchema = <TDeserializer extends AnyResourceDeserializer>(
     deserializer: TDeserializer,
@@ -190,7 +193,10 @@ export const createNullableResourceDocumentSchema = <TDeserializer extends AnyRe
         links: rootLinksSchema.optional(),
         meta: deserializer.documentMetaSchema ?? defaultMetaSchema.optional(),
         included: includedSchema.optional(),
-    });
+    }) as DocumentSchema<
+        z.ZodNullable<ResourceSchema<TDeserializer>>,
+        FallbackMetaSchema<InferDocumentMetaSchema<TDeserializer>>
+    >;
 
 export const createResourceCollectionDocumentSchema = <
     TDeserializer extends AnyResourceDeserializer,
@@ -205,4 +211,7 @@ export const createResourceCollectionDocumentSchema = <
         links: rootLinksSchema.optional(),
         meta: deserializer.documentMetaSchema ?? defaultMetaSchema.optional(),
         included: includedSchema.optional(),
-    });
+    }) as DocumentSchema<
+        z.ZodArray<ResourceSchema<TDeserializer>>,
+        FallbackMetaSchema<InferDocumentMetaSchema<TDeserializer>>
+    >;
