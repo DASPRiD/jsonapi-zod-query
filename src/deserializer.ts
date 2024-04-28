@@ -89,13 +89,16 @@ export type InferType<T> = T extends ResourceDeserializer<
 >
     ? U
     : never;
+type IsUndefined<T> = undefined extends T ? true : false;
 export type InferAttributesSchema<T> = T extends ResourceDeserializer<
     string,
     infer U,
     Relationships | undefined,
     MetaSchema | undefined
 >
-    ? U
+    ? IsUndefined<U> extends true
+        ? undefined
+        : U
     : never;
 export type InferRelationships<T> = T extends ResourceDeserializer<
     string,
@@ -103,7 +106,9 @@ export type InferRelationships<T> = T extends ResourceDeserializer<
     infer U,
     MetaSchema | undefined
 >
-    ? U
+    ? IsUndefined<U> extends true
+        ? undefined
+        : U
     : never;
 export type InferDocumentMetaSchema<T> = T extends ResourceDeserializer<
     string,
@@ -111,7 +116,9 @@ export type InferDocumentMetaSchema<T> = T extends ResourceDeserializer<
     Relationships | undefined,
     infer U
 >
-    ? U
+    ? IsUndefined<U> extends true
+        ? undefined
+        : U
     : never;
 
 type IncludeResult<TDeserializer extends AnyRelationshipDeserializer> =
