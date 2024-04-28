@@ -1,3 +1,11 @@
+## [1.5.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.5.0...v1.5.1) (2024-04-28)
+
+
+### Bug Fixes
+
+* **deserializer:** handle inference of omitted deserializer properties ([6c8793b](https://github.com/dasprid/jsonapi-zod-query/commit/6c8793bb3a10ce2a68a41dced31ed0f42ca019c2))
+* **parser-schemas:** assert return types for document schema creators ([deca970](https://github.com/dasprid/jsonapi-zod-query/commit/deca9707361d0231ee2a3d64689ce1b7b4604013))
+
 # [1.5.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.4.1...v1.5.0) (2024-04-22)
 
 
