@@ -12,6 +12,7 @@ export {
     type Selector,
 } from "./selector.ts";
 export type {
+    CollectionPageParams,
     ResourceCollectionDocumentResult,
     NullableResourceDocumentResult,
     ResourceDocumentResult,

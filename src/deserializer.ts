@@ -187,15 +187,16 @@ export type NullableResourceDocumentResult<TDeserializer extends AnyResourceDese
         ResourceResult<TDeserializer> | null,
         MetaResult<InferDocumentMetaSchema<TDeserializer>>
     >;
+export type CollectionPageParams = {
+    first?: PageParams;
+    prev?: PageParams;
+    next?: PageParams;
+    last?: PageParams;
+};
 export type ResourceCollectionDocumentResult<TDeserializer extends AnyResourceDeserializer> =
     DocumentResult<
         ResourceResult<TDeserializer>[],
         MetaResult<InferDocumentMetaSchema<TDeserializer>>
     > & {
-        pageParams: {
-            first?: PageParams;
-            prev?: PageParams;
-            next?: PageParams;
-            last?: PageParams;
-        };
+        pageParams: CollectionPageParams;
     };
