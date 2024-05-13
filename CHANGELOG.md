@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.5.1...v1.6.0) (2024-05-13)
+
+
+### Features
+
+* export collection page params type ([1f6d398](https://github.com/dasprid/jsonapi-zod-query/commit/1f6d398c43243578652a80483b153b9905a07a1e))
+
 ## [1.5.1](https://github.com/dasprid/jsonapi-zod-query/compare/v1.5.0...v1.5.1) (2024-04-28)
 
 
