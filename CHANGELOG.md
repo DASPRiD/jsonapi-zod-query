@@ -1,3 +1,16 @@
+# [2.0.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.6.0...v2.0.0) (2024-05-14)
+
+
+### Features
+
+* refactor deserialization process ([41b8b5d](https://github.com/dasprid/jsonapi-zod-query/commit/41b8b5dddf1e62e74dab38fd3807635941b494d6))
+
+
+### BREAKING CHANGES
+
+* _links and _meta are now not included in resources by default
+anymore.
+
 # [1.6.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.5.1...v1.6.0) (2024-05-13)
 
 
