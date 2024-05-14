@@ -4,7 +4,7 @@ export const defaultMetaSchema = z.record(z.unknown());
 export type MetaSchema = z.ZodTypeAny;
 export type DefaultMeta = z.output<typeof defaultMetaSchema>;
 
-const linkObjectSchema = z.object({
+export const linkObjectSchema = z.object({
     href: z.string(),
     rel: z.string().optional(),
     describedby: z.string().url().optional(),
@@ -19,6 +19,8 @@ export type Link = z.output<typeof linkSchema>;
 
 export const defaultLinksSchema = z.record(linkSchema);
 export type DefaultLinks = z.output<typeof defaultLinksSchema>;
+
+export type LinksSchema = z.ZodTypeAny;
 
 export const rootLinksSchema = z.object({
     self: linkSchema,

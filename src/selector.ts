@@ -19,6 +19,7 @@ import {
     createResourceDocumentSchema,
     createResourceSchema,
 } from "./parser-schemas.ts";
+import type { DefaultMeta } from "./standard-schemas.ts";
 
 type IncludedResource = {
     raw: unknown;
@@ -126,15 +127,15 @@ const flattenResource = <TDeserializer extends AnyResourceDeserializer>(
     };
 
     if (result.links) {
-        flat._links = result.links;
+        flat.$links = result.links;
     }
 
     if (result.meta) {
-        flat._meta = result.meta;
+        flat.$meta = result.meta;
     }
 
     if (!result.relationships) {
-        return flat as ResourceResult<TDeserializer>;
+        return flat as unknown as ResourceResult<TDeserializer>;
     }
 
     for (const [field, relationship] of Object.entries(result.relationships)) {
@@ -146,20 +147,23 @@ const flattenResource = <TDeserializer extends AnyResourceDeserializer>(
         );
     }
 
-    return flat as ResourceResult<TDeserializer>;
+    return flat as unknown as ResourceResult<TDeserializer>;
 };
 
 export type Selector<T> = (raw: unknown) => T;
 
-const createFlattenedDocumentFromData = <TData, TMetaSchema extends ZodTypeAny>(
+const createFlattenedDocumentFromData = <
+    TData,
+    TMetaSchema extends ZodTypeAny,
+    TIncludeDocumentLinks extends boolean | undefined,
+>(
     result: z.output<DocumentSchema<z.ZodTypeAny, TMetaSchema>>,
     data: TData,
-): DocumentResult<TData, z.output<TMetaSchema>> => {
-    const document: Record<string, unknown> = {
-        data,
-    };
+    includeDocumentLinks: TIncludeDocumentLinks,
+): DocumentResult<TData, z.output<TMetaSchema>, TIncludeDocumentLinks> => {
+    const document: Record<string, unknown> = { data };
 
-    if (result.links) {
+    if (result.links && includeDocumentLinks) {
         document.links = result.links;
     }
 
@@ -167,7 +171,7 @@ const createFlattenedDocumentFromData = <TData, TMetaSchema extends ZodTypeAny>(
         document.meta = result.meta;
     }
 
-    return document as DocumentResult<TData, z.output<TMetaSchema>>;
+    return document as DocumentResult<TData, z.output<TMetaSchema>, TIncludeDocumentLinks>;
 };
 
 export const createResourceSelector = <TDeserializer extends AnyResourceDeserializer>(
@@ -183,7 +187,8 @@ export const createResourceSelector = <TDeserializer extends AnyResourceDeserial
         return createFlattenedDocumentFromData(
             document,
             flattenResource(document.data, null, included, resourceSchemaCache),
-        );
+            deserializer.includeDocumentLinks,
+        ) as ResourceDocumentResult<TDeserializer>;
     };
 };
 
@@ -202,7 +207,8 @@ export const createNullableResourceSelector = <TDeserializer extends AnyResource
             document.data === null
                 ? null
                 : flattenResource(document.data, null, included, resourceSchemaCache),
-        );
+            deserializer.includeDocumentLinks,
+        ) as NullableResourceDocumentResult<TDeserializer>;
     };
 };
 
@@ -222,6 +228,7 @@ export const createResourceCollectionSelector = <TDeserializer extends AnyResour
                 document.data.map((resource) =>
                     flattenResource(resource, null, included, resourceSchemaCache),
                 ),
+                deserializer.includeDocumentLinks,
             ),
             pageParams: {
                 first: parsePageParamsFromLink(document.links?.first),
@@ -229,11 +236,17 @@ export const createResourceCollectionSelector = <TDeserializer extends AnyResour
                 next: parsePageParamsFromLink(document.links?.next),
                 last: parsePageParamsFromLink(document.links?.last),
             },
-        };
+        } as unknown as ResourceCollectionDocumentResult<TDeserializer>;
     };
 };
 
 export const createDataSelector =
-    <TData, TMeta>(documentSelector: Selector<DocumentResult<TData, TMeta>>): Selector<TData> =>
+    <
+        TData,
+        TMeta extends DefaultMeta | undefined,
+        TIncludeDocumentLinks extends boolean | undefined,
+    >(
+        documentSelector: Selector<DocumentResult<TData, TMeta, TIncludeDocumentLinks>>,
+    ): Selector<TData> =>
     (raw: unknown) =>
         documentSelector(raw).data;

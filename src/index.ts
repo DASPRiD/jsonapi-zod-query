@@ -19,5 +19,14 @@ export type {
     DocumentResult,
     ResourceResult,
     ResourceDeserializer,
+    AnyResourceDeserializer,
     Relationships,
 } from "./deserializer.ts";
+export {
+    type DefaultMeta,
+    type Link,
+    type RootLinks,
+    linkSchema,
+    linkObjectSchema,
+    defaultLinksSchema,
+} from "./standard-schemas.ts";

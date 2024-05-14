@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
-    type Relationships,
     createDataSelector,
     createNullableResourceSelector,
     createResourceCollectionSelector,
     createResourceSelector,
+    type Relationships,
 } from "../src/index.js";
 
 describe("createResourceSelector", () => {
@@ -217,9 +217,33 @@ describe("createNullableResourceSelector", () => {
 });
 
 describe("createResourceCollectionSelector", () => {
-    it("should return an page params", () => {
+    it("should return page params", () => {
         const selector = createResourceCollectionSelector({
             type: "article",
+        });
+
+        const result = selector({
+            data: [
+                { id: "1", type: "article" },
+                { id: "2", type: "article" },
+            ],
+            links: {
+                next: "/?page[number]=2",
+            },
+        });
+
+        expect(result).toEqual({
+            data: [{ id: "1" }, { id: "2" }],
+            pageParams: {
+                next: { number: "2" },
+            },
+        });
+    });
+
+    it("should include document links when enabled", () => {
+        const selector = createResourceCollectionSelector({
+            type: "article",
+            includeDocumentLinks: true,
         });
 
         const result = selector({

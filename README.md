@@ -161,3 +161,9 @@ must define one of the following two properties:
 >     },
 > });
 > ```
+
+### Resource links and meta
+
+If you want to retrieve links or meta for resources, you can specify `linksSchema` and `metaSchema` respectively. Once
+defined, you'll either get a `$links` or `$meta` property on your resources. The `$` prefix is a design decision in
+order to avoid name clashes with attributes or relationships with the same name.

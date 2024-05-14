@@ -1,14 +1,15 @@
 import type { z } from "zod";
+import type { Flatten, InferPropertyType } from "./helpers.ts";
 import type { PageParams } from "./pagination.ts";
-import type { defaultMetaSchema } from "./standard-schemas.ts";
 import type {
     AttributesSchema,
-    DefaultLinks,
     DefaultMeta,
+    LinksSchema,
     MetaSchema,
     RootLinks,
 } from "./standard-schemas.ts";
 
+// Relationship types
 export type RelationshipType = "one" | "one_nullable" | "many";
 
 export type ReferenceRelationshipDeserializer<
@@ -26,7 +27,7 @@ export type AnyReferenceRelationshipDeserializer = ReferenceRelationshipDeserial
 
 export type IncludedRelationshipDeserializer<
     TRelationshipType extends RelationshipType,
-    TInclude extends AnyResourceDeserializer,
+    TInclude extends ResourceDeserializer,
 > = {
     relationshipType: TRelationshipType;
     include: TInclude;
@@ -44,91 +45,50 @@ export type AnyRelationshipDeserializer =
 
 export type Relationships = Record<string, AnyRelationshipDeserializer>;
 
+export type InferRelationshipResourceType<T extends AnyRelationshipDeserializer> =
+    T extends AnyReferenceRelationshipDeserializer
+        ? T["resourceType"]
+        : T extends AnyIncludedRelationshipDeserializer
+          ? T["include"]["type"]
+          : never;
+
+// Resource types
 export type ResourceDeserializer<
     TType extends string = string,
     TAttributesSchema extends AttributesSchema | undefined = undefined,
     TRelationships extends Relationships | undefined = undefined,
+    TLinksSchema extends LinksSchema | undefined = undefined,
+    TMetaSchema extends MetaSchema | undefined = undefined,
     TDocumentMetaSchema extends MetaSchema | undefined = undefined,
+    TIncludeDocumentLinks extends boolean | undefined = undefined,
 > = {
     type: TType;
     attributesSchema?: TAttributesSchema;
     relationships?: TRelationships;
+    linksSchema?: TLinksSchema;
+    metaSchema?: TMetaSchema;
     documentMetaSchema?: TDocumentMetaSchema;
+    includeDocumentLinks?: TIncludeDocumentLinks;
 };
 
 export type AnyResourceDeserializer = ResourceDeserializer<
     string,
     AttributesSchema | undefined,
     Relationships | undefined,
-    MetaSchema | undefined
+    LinksSchema | undefined,
+    MetaSchema | undefined,
+    MetaSchema | undefined,
+    boolean | undefined
 >;
 
-export type InferResourceType<T> = T extends ReferenceRelationshipDeserializer<
-    RelationshipType,
-    infer U
->
-    ? U
-    : T extends IncludedRelationshipDeserializer<infer U, AnyResourceDeserializer>
-      ? U extends AnyResourceDeserializer
-            ? U["type"]
-            : never
-      : never;
-export type InferRelationshipType<T> = T extends ReferenceRelationshipDeserializer<infer U, string>
-    ? U
-    : T extends IncludedRelationshipDeserializer<infer U, AnyResourceDeserializer>
-      ? U
-      : never;
-export type InferInclude<T> = T extends IncludedRelationshipDeserializer<RelationshipType, infer U>
-    ? U
-    : never;
-export type InferType<T> = T extends ResourceDeserializer<
-    infer U,
-    AttributesSchema | undefined,
-    Relationships | undefined,
-    MetaSchema | undefined
->
-    ? U
-    : never;
-type IsUndefined<T> = undefined extends T ? true : false;
-export type InferAttributesSchema<T> = T extends ResourceDeserializer<
-    string,
-    infer U,
-    Relationships | undefined,
-    MetaSchema | undefined
->
-    ? IsUndefined<U> extends true
-        ? undefined
-        : U
-    : never;
-export type InferRelationships<T> = T extends ResourceDeserializer<
-    string,
-    AttributesSchema | undefined,
-    infer U,
-    MetaSchema | undefined
->
-    ? IsUndefined<U> extends true
-        ? undefined
-        : U
-    : never;
-export type InferDocumentMetaSchema<T> = T extends ResourceDeserializer<
-    string,
-    AttributesSchema | undefined,
-    Relationships | undefined,
-    infer U
->
-    ? IsUndefined<U> extends true
-        ? undefined
-        : U
-    : never;
-
 type IncludeResult<TDeserializer extends AnyRelationshipDeserializer> =
-    TDeserializer extends AnyReferenceRelationshipDeserializer
-        ? { id: string }
-        : ResourceResult<InferInclude<TDeserializer>>;
+    TDeserializer extends AnyIncludedRelationshipDeserializer
+        ? ResourceResult<TDeserializer["include"]>
+        : { id: string };
 
 export type RelationshipResult<
     TDeserializer extends AnyRelationshipDeserializer,
-    TRelationshipType extends RelationshipType = InferRelationshipType<TDeserializer>,
+    TRelationshipType extends RelationshipType = TDeserializer["relationshipType"],
 > = TRelationshipType extends "one"
     ? IncludeResult<TDeserializer>
     : TRelationshipType extends "one_nullable"
@@ -140,52 +100,74 @@ type RelationshipsResult<T extends Relationships> = {
 };
 
 type AppendAttributes<
+    TDeserializer extends AnyResourceDeserializer,
     TBase,
-    TAttributesSchema extends AttributesSchema | undefined,
+    TAttributesSchema extends AttributesSchema | undefined = InferPropertyType<
+        TDeserializer,
+        "attributesSchema"
+    >,
 > = TAttributesSchema extends AttributesSchema ? TBase & z.output<TAttributesSchema> : TBase;
 
 type AppendRelationships<
+    TDeserializer extends AnyResourceDeserializer,
     TBase,
-    TRelationships extends Relationships | undefined,
+    TRelationships extends Relationships | undefined = InferPropertyType<
+        TDeserializer,
+        "relationships"
+    >,
 > = TRelationships extends Relationships ? TBase & RelationshipsResult<TRelationships> : TBase;
 
-export type ResourceResult<
+type AppendLinks<
     TDeserializer extends AnyResourceDeserializer,
-    TAttributesSchema extends AttributesSchema | undefined = InferAttributesSchema<TDeserializer>,
-    TRelationships extends Relationships | undefined = InferRelationships<TDeserializer>,
-> = AppendRelationships<
+    TBase,
+    TLinksSchema extends LinksSchema | undefined = InferPropertyType<TDeserializer, "linksSchema">,
+> = TLinksSchema extends LinksSchema ? TBase & { $links: z.output<LinksSchema> } : TBase;
+
+type AppendMeta<
+    TDeserializer extends AnyResourceDeserializer,
+    TBase,
+    TMetaSchema extends MetaSchema | undefined = InferPropertyType<TDeserializer, "metaSchema">,
+> = TMetaSchema extends MetaSchema ? TBase & { $meta: z.output<TMetaSchema> } : TBase;
+
+export type ResourceResult<TDeserializer extends AnyResourceDeserializer> = Flatten<
     AppendAttributes<
-        {
-            id: string;
-            _links?: DefaultLinks;
-            _meta?: DefaultMeta;
-        },
-        TAttributesSchema
-    >,
-    TRelationships
+        TDeserializer,
+        AppendRelationships<
+            TDeserializer,
+            AppendLinks<TDeserializer, AppendMeta<TDeserializer, { id: string }>>
+        >
+    >
 >;
 
-export type FallbackMetaSchema<T extends MetaSchema> = T extends MetaSchema
-    ? MetaSchema
-    : z.ZodOptional<typeof defaultMetaSchema>;
+// Document types
+type MetaResult<TMetaSchema extends MetaSchema | undefined> = TMetaSchema extends MetaSchema
+    ? z.output<TMetaSchema>
+    : undefined;
 
-type MetaResult<TMeta extends MetaSchema | undefined> = TMeta extends MetaSchema
-    ? z.output<TMeta>
-    : DefaultMeta | undefined;
+type AppendDocumentMeta<TMeta extends DefaultMeta | undefined, TBase> = TMeta extends DefaultMeta
+    ? TBase & { meta: TMeta }
+    : TBase;
 
-export type DocumentResult<TData, TMeta> = {
-    data: TData;
-    links?: RootLinks;
-    meta: TMeta;
-};
+type AppendDocumentLinks<
+    TIncludeDocumentLinks extends boolean | undefined,
+    TBase,
+> = TIncludeDocumentLinks extends true ? TBase & { links: RootLinks } : TBase;
+
+export type DocumentResult<
+    TData,
+    TMeta extends DefaultMeta | undefined,
+    TIncludeDocumentLinks extends boolean | undefined,
+> = AppendDocumentLinks<TIncludeDocumentLinks, AppendDocumentMeta<TMeta, { data: TData }>>;
 export type ResourceDocumentResult<TDeserializer extends AnyResourceDeserializer> = DocumentResult<
     ResourceResult<TDeserializer>,
-    MetaResult<InferDocumentMetaSchema<TDeserializer>>
+    MetaResult<InferPropertyType<TDeserializer, "documentMetaSchema">>,
+    InferPropertyType<TDeserializer, "includeDocumentLinks">
 >;
 export type NullableResourceDocumentResult<TDeserializer extends AnyResourceDeserializer> =
     DocumentResult<
         ResourceResult<TDeserializer> | null,
-        MetaResult<InferDocumentMetaSchema<TDeserializer>>
+        MetaResult<InferPropertyType<TDeserializer, "documentMetaSchema">>,
+        InferPropertyType<TDeserializer, "includeDocumentLinks">
     >;
 export type CollectionPageParams = {
     first?: PageParams;
@@ -196,7 +178,8 @@ export type CollectionPageParams = {
 export type ResourceCollectionDocumentResult<TDeserializer extends AnyResourceDeserializer> =
     DocumentResult<
         ResourceResult<TDeserializer>[],
-        MetaResult<InferDocumentMetaSchema<TDeserializer>>
+        MetaResult<InferPropertyType<TDeserializer, "documentMetaSchema">>,
+        InferPropertyType<TDeserializer, "includeDocumentLinks">
     > & {
         pageParams: CollectionPageParams;
     };
