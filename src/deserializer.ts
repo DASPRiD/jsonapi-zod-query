@@ -121,7 +121,7 @@ type AppendLinks<
     TDeserializer extends AnyResourceDeserializer,
     TBase,
     TLinksSchema extends LinksSchema | undefined = InferPropertyType<TDeserializer, "linksSchema">,
-> = TLinksSchema extends LinksSchema ? TBase & { $links: z.output<LinksSchema> } : TBase;
+> = TLinksSchema extends LinksSchema ? TBase & { $links: z.output<TLinksSchema> } : TBase;
 
 type AppendMeta<
     TDeserializer extends AnyResourceDeserializer,

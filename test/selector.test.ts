@@ -198,6 +198,32 @@ describe("createResourceSelector", () => {
             },
         });
     });
+
+    it("should parse resource links", () => {
+        const selector = createResourceSelector({
+            type: "article",
+            linksSchema: z.object({
+                self: z.string(),
+            }),
+        });
+
+        const result = selector({
+            data: {
+                id: "ID-p",
+                type: "article",
+                links: { self: "foo" },
+            },
+        });
+
+        expect(result).toEqual({
+            data: {
+                id: "ID-p",
+                $links: {
+                    self: "foo",
+                },
+            },
+        });
+    });
 });
 
 describe("createNullableResourceSelector", () => {
