@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/dasprid/jsonapi-zod-query/compare/v2.0.0...v2.0.1) (2024-05-21)
+
+
+### Bug Fixes
+
+* **deserializer:** infer  output from TLinksSchema ([24402b2](https://github.com/dasprid/jsonapi-zod-query/commit/24402b2c779f077358dda5022a13770cdf82b28e))
+
 # [2.0.0](https://github.com/dasprid/jsonapi-zod-query/compare/v1.6.0...v2.0.0) (2024-05-14)
 
 
