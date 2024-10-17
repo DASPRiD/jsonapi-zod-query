@@ -35,8 +35,7 @@ export type IncludedRelationshipDeserializer<
 
 export type AnyIncludedRelationshipDeserializer = IncludedRelationshipDeserializer<
     RelationshipType,
-    // biome-ignore lint/suspicious/noExplicitAny: required to avoid circular dependency
-    any
+    ResourceDeserializer
 >;
 
 export type AnyRelationshipDeserializer =
