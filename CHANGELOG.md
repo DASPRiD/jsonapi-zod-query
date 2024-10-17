@@ -1,3 +1,15 @@
+# [2.1.0](https://github.com/dasprid/jsonapi-zod-query/compare/v2.0.1...v2.1.0) (2024-10-17)
+
+
+### Bug Fixes
+
+* allow AnyResourceDeserializer to know about the generic include type ([fd70013](https://github.com/dasprid/jsonapi-zod-query/commit/fd700132ce3aa0475f1c4ef51f37c56fa44ae5e3))
+
+
+### Features
+
+* expose AnyRelationshipDeserializer type ([454bb5f](https://github.com/dasprid/jsonapi-zod-query/commit/454bb5f61d216f4e7412f732cc6af047d638e5dd))
+
 ## [2.0.1](https://github.com/dasprid/jsonapi-zod-query/compare/v2.0.0...v2.0.1) (2024-05-21)
 
 
