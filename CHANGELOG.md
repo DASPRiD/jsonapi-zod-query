@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/dasprid/jsonapi-zod-query/compare/v2.1.0...v2.1.1) (2024-10-17)
+
+
+### Bug Fixes
+
+* **deserializer:** apply concrete type while avoiding circular dependency ([7ac1a8b](https://github.com/dasprid/jsonapi-zod-query/commit/7ac1a8bab237d365bccf71ca9b32a1222fd7960c))
+
 # [2.1.0](https://github.com/dasprid/jsonapi-zod-query/compare/v2.0.1...v2.1.0) (2024-10-17)
 
 
