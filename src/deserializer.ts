@@ -27,7 +27,7 @@ export type AnyReferenceRelationshipDeserializer = ReferenceRelationshipDeserial
 
 export type IncludedRelationshipDeserializer<
     TRelationshipType extends RelationshipType,
-    TInclude extends ResourceDeserializer,
+    TInclude extends AnyResourceDeserializer,
 > = {
     relationshipType: TRelationshipType;
     include: TInclude;
@@ -35,7 +35,16 @@ export type IncludedRelationshipDeserializer<
 
 export type AnyIncludedRelationshipDeserializer = IncludedRelationshipDeserializer<
     RelationshipType,
-    ResourceDeserializer
+    ResourceDeserializer<
+        string,
+        AttributesSchema | undefined,
+        // biome-ignore lint/suspicious/noExplicitAny: required to avoid circular dependency
+        any,
+        LinksSchema | undefined,
+        MetaSchema | undefined,
+        MetaSchema | undefined,
+        boolean | undefined
+    >
 >;
 
 export type AnyRelationshipDeserializer =
