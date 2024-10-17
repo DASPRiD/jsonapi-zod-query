@@ -12,6 +12,7 @@ export {
     type Selector,
 } from "./selector.ts";
 export type {
+    AnyRelationshipDeserializer,
     CollectionPageParams,
     ResourceCollectionDocumentResult,
     NullableResourceDocumentResult,
